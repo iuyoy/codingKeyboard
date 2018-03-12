@@ -18,11 +18,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         let mainStoryBoard = UIStoryboard(name: "Main", bundle: Bundle.main)
         let mainViewController = mainStoryBoard.instantiateInitialViewController()
-        
+
         // Set root view controller and make windows visible
         self.window!.rootViewController = mainViewController
         self.window?.makeKeyAndVisible()
-        
+
         return true
     }
 
@@ -48,6 +48,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
-
 }
-

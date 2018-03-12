@@ -25,7 +25,6 @@ var shiftFlag:SHIFT_TYPE = SHIFT_TYPE.shift_LOWERALWAYS
 
 class KeyboardViewController: UIInputViewController {
 
-    @IBOutlet var nextKeyboardButton: UIButton!
     var boardView:BoardView!//字母键盘
 //    var timer:Timer!//用于长按删除
 //    var deleteTime:Double!
@@ -33,17 +32,15 @@ class KeyboardViewController: UIInputViewController {
 
     let screenWidth = UIScreen.main.bounds.size.width
 
-    override func updateViewConstraints() {
-        super.updateViewConstraints()
-        // Add custom view sizing constraints here
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
         self.keyboardType = KEYBOARD_TYPE.alphabet
+//        self.view.translatesAutoresizingMaskIntoConstraints = false
 //        self.deleteTime = 0.0
-
+        let _expandedHeight = CGFloat(264)
+        let _heightConstraint = NSLayoutConstraint(item:self.view, attribute:.height, relatedBy:.equal, toItem:nil, attribute:.notAnAttribute, multiplier:0.0, constant: _expandedHeight)
+        self.view.addConstraint(_heightConstraint)
         self.view.isMultipleTouchEnabled = false
         self.view.isExclusiveTouch = true
         self.putKeyboardToView()
@@ -51,8 +48,8 @@ class KeyboardViewController: UIInputViewController {
     /*-----------------将所需键盘上屏----------------*/
     func putKeyboardToView() {
 
-        self.boardView = BoardView(frame:CGRect(x: 0, y: 0, width: screenWidth, height: CGFloat(keyboardHeight())))
-//        self.boardView = BoardView(frame:CGRect(x: 0, y: 0, width: screenWidth, height: CGFloat(216)))
+//        self.boardView = BoardView(frame:CGRect(x: 0, y: 0, width: screenWidth, height: CGFloat(keyboardHeight())))
+        self.boardView = BoardView(frame:CGRect(x: 0, y: 0, width: screenWidth, height: CGFloat(264)))
 
         self.bindKey()
         self.view.addSubview(self.boardView)
@@ -61,14 +58,26 @@ class KeyboardViewController: UIInputViewController {
     func bindKey(){
         for buttonView in self.boardView.allButton {
             switch(buttonView.getText()) {
+            case "return":
+                buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapReturn), for: .touchUpInside)
+                break
             case "space":
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapSpace), for: .touchUpInside)
+                break
+            case "tab":
+                buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapTab), for: .touchUpInside)
                 break
             case "delete":
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapDelete), for: .touchUpInside)
                 break
             case "next":
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapNext), for: .touchUpInside)
+                break
+            case "left":
+                buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapLeft), for: .touchUpInside)
+                break
+            case "right":
+                buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapRight), for: .touchUpInside)
                 break
             default:
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapCharacter), for: .touchUpInside)
@@ -79,6 +88,8 @@ class KeyboardViewController: UIInputViewController {
             }
         }
     }
+
+    /*---------------------------Tap character key---------------------------*/
     @objc
     func didTapCharacter(sender: NormalButton){
         let proxy = textDocumentProxy
@@ -88,6 +99,7 @@ class KeyboardViewController: UIInputViewController {
             proxy.insertText(sender.lowChar)
         }
     }
+    /*---------------------------Slide to input symbol---------------------------*/
     @objc
     func didTapTriChar(sender: NormalButton){
         let proxy = textDocumentProxy
@@ -95,31 +107,29 @@ class KeyboardViewController: UIInputViewController {
             proxy.insertText(sender.triChar)
         }
     }
+    /*---------------------------Tap return key---------------------------*/
     @objc
-    func didTapSpace(){
-        let proxy = textDocumentProxy
-        proxy.insertText(" ")
-    }
+    func didTapReturn(){ textDocumentProxy.insertText("\n") }
+    /*---------------------------Tap space key---------------------------*/
     @objc
-    func didTapNext()
-    {
-        advanceToNextInputMode()
-    }
+    func didTapSpace(){ textDocumentProxy.insertText(" ") }
+    /*---------------------------Tap tab key---------------------------*/
     @objc
-    func didTapDelete(){
-        let proxy = textDocumentProxy
-        proxy.deleteBackward()
-    }
-    /*-----------------开始触屏按键动作----------------*/
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesBegan(touches, with: event)
-    }
-    /*-----------------结束触屏按键动作----------------*/
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesEnded(touches, with: event)
-    }
+    func didTapTab(){ textDocumentProxy.insertText("    ") }
+    /*---------------------------Tap delete key---------------------------*/
+    @objc
+    func didTapDelete(){ textDocumentProxy.deleteBackward() }
+    /*---------------------------Tap left key---------------------------*/
+    @objc
+    func didTapLeft(){ textDocumentProxy.adjustTextPosition(byCharacterOffset: -1) }
+    /*---------------------------Tap right key---------------------------*/
+    @objc
+    func didTapRight(){ textDocumentProxy.adjustTextPosition(byCharacterOffset: 1) }
+    /*---------------------------Tap next key---------------------------*/
+    @objc
+    func didTapNext(){ advanceToNextInputMode() }
 
-    /*--------------------------设置键盘高度---------------------------*/
+    /*--------------------------Set the keyboardHeight---------------------------*/
     func keyboardHeight()->Float {
         var keyboardheight:Float
 
@@ -159,25 +169,17 @@ class KeyboardViewController: UIInputViewController {
     }
 
     /*--------------------------System auto generation---------------------------*/
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated
-    }
-
-    override func textWillChange(_ textInput: UITextInput?) {
-        // The app is about to change the document's contents. Perform any preparation here.
-    }
-
-//    override func textDidChange(_ textInput: UITextInput?) {
-//        // The app has just changed the document's contents, the document context has been updated.
+//    override func didReceiveMemoryWarning() {
+//        super.didReceiveMemoryWarning()
+//        // Dispose of any resources that can be recreated
+//    }
 //
-//        var textColor: UIColor
-//        let proxy = self.textDocumentProxy
-//        if proxy.keyboardAppearance == UIKeyboardAppearance.dark {
-//            textColor = UIColor.white
-//        } else {
-//            textColor = UIColor.black
-//        }
-//        self.nextKeyboardButton.setTitleColor(textColor, for: [])
+//    override func textWillChange(_ textInput: UITextInput?) {
+//        // The app is about to change the document's contents. Perform any preparation here.
+//    }
+//
+//    override func updateViewConstraints() {
+//        super.updateViewConstraints()
+//        // Add custom view sizing constraints here
 //    }
 }

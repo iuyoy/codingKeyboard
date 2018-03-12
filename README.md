@@ -1,5 +1,24 @@
 # codingKeyboard
-It is my first application on IOS, just to replace the origin keyboard when I want to code using iphone.
+It is my first application on IOS, just for replacing the origin keyboard when I want to code using iphone.
+
+#### To-do list
+- [ ] Key functions
+  - [x] Basic key functions
+  - [x] Slide a button to input a symbol
+  - [x] Arrow key function
+  - [ ] Long pressing deletion
+  - [ ] Text-transform control (shift key)
+  - [ ] Config key
+  - [ ] Number key?
+- [ ] Application icon
+- [ ] Key icons
+- [ ] Characters layout
+- [ ] Configs
+  - [ ] Indent by tap or spaces
+- [ ] Press feedback
+  - [ ] voice
+  - [ ] mirror key arrow (like apple keyboard)
+- [ ] Programming language words dict
 
 
 ### Ref
@@ -9,3 +28,5 @@ It is my first application on IOS, just to replace the origin keyboard when I wa
 [App Extension - Custom Keyboard](https://developer.apple.com/library/content/documentation/General/Conceptual/ExtensibilityPG/CustomKeyboard.html)
 
 [TXInputMethod - txHe](https://github.com/txHe/TXInputMethod)
+
+Thanks for [google](https://www.google.com) & [stackoverflow](https://www.stackoverflow.com)
