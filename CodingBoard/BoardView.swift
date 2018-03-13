@@ -61,7 +61,13 @@ class BoardView : UIView {
 
     /*---------------------------Create a single buttonView---------------------------*/
     func  createNormalButton(_ titles: [String]) -> NormalButton{
-        let button = NormalButton(frame:CGRect(x: 0, y: 0.0, width: 0.0, height: 0.0), lowChar: titles[0], upperChar: titles[1], triChar: titles[2])
+        let button: NormalButton
+        switch titles[1] {
+        case "shift":
+            button = ShiftButton(frame:CGRect(x: 0, y: 0.0, width: 0.0, height: 0.0), lowChar: titles[0], upperChar: titles[1], triChar: titles[2])
+        default:
+            button = NormalButton(frame:CGRect(x: 0, y: 0.0, width: 0.0, height: 0.0), lowChar: titles[0], upperChar: titles[1], triChar: titles[2])
+        }
         return button
     }
     /*---------------------------Layout Controller---------------------------*/

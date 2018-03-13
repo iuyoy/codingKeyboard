@@ -9,9 +9,8 @@
 import UIKit
 import Foundation
 
-/*---------------------------普通按键的自定义View---------------------------*/
+/*---------------------------Normal Button UI---------------------------*/
 class NormalButton: UIControl {
-    // var buttonTitle: String! //按键上的title
     var fillColor: UIColor! //填充背景色
     var lowChar: String! //小写字母
     var upperChar: String! //大写
@@ -37,7 +36,7 @@ class NormalButton: UIControl {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-//    open var textDocumentProxy: UITextDocumentProxy { get }
+
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         self.addSubview(ClickKeyView(frame: self.bounds))
@@ -50,19 +49,16 @@ class NormalButton: UIControl {
            v.removeFromSuperview()
         }
     }
-
-    func setFillcolor(_ color:UIColor) {
-        self.fillColor = color
-    }
-
-    func setTitle(_ title:String) {
-        self.lowChar = title
-        // self.buttonTitle = title
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesCancelled(touches, with: event)
+        for v in self.subviews {
+            v.removeFromSuperview()
+        }
     }
     public func getText() -> String{
         return self.upperChar
     }
-    /*---------------------------自主绘制按键---------------------------*/
+    
     override func draw(_ rect: CGRect) {
 
         let context:CGContext = UIGraphicsGetCurrentContext()!
@@ -76,14 +72,18 @@ class NormalButton: UIControl {
         let paragraphStyle:NSMutableParagraphStyle = NSMutableParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
         paragraphStyle.lineBreakMode = NSLineBreakMode.byTruncatingTail
         paragraphStyle.alignment = NSTextAlignment.center
-
-        let char_y_pos = drawCharacter(rect, character: self.lowChar, paragraphStyle: paragraphStyle, fontSize: 16.0, fontColor: UIColor.black)
-
+        let char_y_pos : CGFloat
+        
+        if shiftFlag != SHIFT_TYPE.shift_LOWERALWAYS && self.upperChar.count == 1{
+            char_y_pos = drawCharacter(rect, character: self.upperChar, paragraphStyle: paragraphStyle, fontSize: 16.0, fontColor: UIColor.black)
+        } else {
+            char_y_pos = drawCharacter(rect, character: self.lowChar, paragraphStyle: paragraphStyle, fontSize: 16.0, fontColor: UIColor.black)
+        }
         if self.triChar != ""{
             drawSymbol(rect, paragraphStyle: paragraphStyle, fontSize: 12.0, fontColor: UIColor.lightGray,char_y_pos: char_y_pos)
         }
     }
-    /*---------------------------绘制按键上的字符---------------------------*/
+    /*---------------------------Draw character---------------------------*/
     func drawCharacter(_ rect: CGRect, character: String, paragraphStyle: NSMutableParagraphStyle, fontSize: CGFloat, fontColor: UIColor) -> CGFloat{
         let charAttr:NSDictionary = [NSAttributedStringKey.font:UIFont.systemFont(ofSize: fontSize),
                                       NSAttributedStringKey.foregroundColor:fontColor,
@@ -106,8 +106,33 @@ class NormalButton: UIControl {
         self.triChar.draw(at: point_title, withAttributes: charAttr as? [NSAttributedStringKey : Any])
     }
 }
+class ShiftButton: NormalButton{
+    override func draw(_ rect: CGRect) {
 
-/*---------------------------点击按键变色---------------------------*/
+        let context:CGContext = UIGraphicsGetCurrentContext()!
+        let backgroundcolor = UIColor(red: 209/255.0, green: 213/255.0, blue: 219/255.0, alpha: 1.0)
+        context.setFillColor(backgroundcolor.cgColor)
+        let roundedRect:UIBezierPath = UIBezierPath(roundedRect: rect, cornerRadius: 6.0)
+        context.fill(rect)
+        self.fillColor.setFill()
+        roundedRect.fill(with: CGBlendMode.normal, alpha: 1)
+
+        let paragraphStyle:NSMutableParagraphStyle = NSMutableParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
+        paragraphStyle.lineBreakMode = NSLineBreakMode.byTruncatingTail
+        paragraphStyle.alignment = NSTextAlignment.center
+        switch shiftFlag {
+        case SHIFT_TYPE.shift_UPPERALWAYS:
+            _ = drawCharacter(rect, character: "⇪", paragraphStyle: paragraphStyle, fontSize: 16.0, fontColor: UIColor.black)
+            break
+        case SHIFT_TYPE.shift_UPPERONCE:
+            _ = drawCharacter(rect, character: self.lowChar, paragraphStyle: paragraphStyle, fontSize: 16.0, fontColor: UIColor.black)
+            break
+        default:
+            _ = drawCharacter(rect, character: self.lowChar, paragraphStyle: paragraphStyle, fontSize: 16.0, fontColor: UIColor.black)
+        }
+    }
+}
+/*---------------------------Change button backgroundcolor when tap---------------------------*/
 class ClickKeyView: UIView {
     var backgroundcolor:UIColor!
 

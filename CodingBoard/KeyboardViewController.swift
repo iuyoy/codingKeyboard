@@ -25,19 +25,16 @@ var shiftFlag:SHIFT_TYPE = SHIFT_TYPE.shift_LOWERALWAYS
 
 class KeyboardViewController: UIInputViewController {
 
-    var boardView:BoardView!//字母键盘
-//    var timer:Timer!//用于长按删除
-//    var deleteTime:Double!
-    var keyboardType:KEYBOARD_TYPE!
-
+    var boardView:BoardView!
+    var timer: Timer!// for long press deletion
+    
+    var shiftButton: NormalButton!
     let screenWidth = UIScreen.main.bounds.size.width
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.keyboardType = KEYBOARD_TYPE.alphabet
 //        self.view.translatesAutoresizingMaskIntoConstraints = false
-//        self.deleteTime = 0.0
         let _expandedHeight = CGFloat(264)
         let _heightConstraint = NSLayoutConstraint(item:self.view, attribute:.height, relatedBy:.equal, toItem:nil, attribute:.notAnAttribute, multiplier:0.0, constant: _expandedHeight)
         self.view.addConstraint(_heightConstraint)
@@ -50,7 +47,7 @@ class KeyboardViewController: UIInputViewController {
 
 //        self.boardView = BoardView(frame:CGRect(x: 0, y: 0, width: screenWidth, height: CGFloat(keyboardHeight())))
         self.boardView = BoardView(frame:CGRect(x: 0, y: 0, width: screenWidth, height: CGFloat(264)))
-
+        
         self.bindKey()
         self.view.addSubview(self.boardView)
 
@@ -67,7 +64,13 @@ class KeyboardViewController: UIInputViewController {
             case "tab":
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapTab), for: .touchUpInside)
                 break
+            case "shift":
+                shiftButton = buttonView
+                buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapShift), for: .touchUpInside)
+                break
             case "delete":
+                let longTapRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(KeyboardViewController.longTapDelete))
+                buttonView.addGestureRecognizer(longTapRecognizer)
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapDelete), for: .touchUpInside)
                 break
             case "next":
@@ -88,13 +91,17 @@ class KeyboardViewController: UIInputViewController {
             }
         }
     }
-
+    
     /*---------------------------Tap character key---------------------------*/
     @objc
     func didTapCharacter(sender: NormalButton){
         let proxy = textDocumentProxy
-        if shiftFlag == SHIFT_TYPE.shift_UPPERALWAYS && sender.upperChar != "" {
+        if shiftFlag != SHIFT_TYPE.shift_LOWERALWAYS && sender.upperChar != "" {
             proxy.insertText(sender.upperChar)
+            if shiftFlag == SHIFT_TYPE.shift_UPPERONCE {
+                shiftFlag = SHIFT_TYPE.shift_LOWERALWAYS
+                redrawButtons()
+            }
         }else{
             proxy.insertText(sender.lowChar)
         }
@@ -116,9 +123,29 @@ class KeyboardViewController: UIInputViewController {
     /*---------------------------Tap tab key---------------------------*/
     @objc
     func didTapTab(){ textDocumentProxy.insertText("    ") }
+    /*---------------------------Tap shift key---------------------------*/
+    @objc
+    func didTapShift(){
+        if shiftFlag == SHIFT_TYPE.shift_LOWERALWAYS{
+            shiftFlag = SHIFT_TYPE.shift_UPPERONCE
+        }else{
+            shiftFlag = SHIFT_TYPE.shift_LOWERALWAYS
+        }
+        redrawButtons()
+    }
     /*---------------------------Tap delete key---------------------------*/
     @objc
     func didTapDelete(){ textDocumentProxy.deleteBackward() }
+    /*---------------------------Long Tap delete key---------------------------*/
+    @objc
+    func longTapDelete(gesture: UILongPressGestureRecognizer) {
+        if gesture.state == .began {
+            timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(KeyboardViewController.didTapDelete), userInfo: nil, repeats: true)
+        } else if gesture.state == .ended || gesture.state == .cancelled {
+            timer?.invalidate()
+            timer = nil
+        }
+    }
     /*---------------------------Tap left key---------------------------*/
     @objc
     func didTapLeft(){ textDocumentProxy.adjustTextPosition(byCharacterOffset: -1) }
@@ -128,7 +155,11 @@ class KeyboardViewController: UIInputViewController {
     /*---------------------------Tap next key---------------------------*/
     @objc
     func didTapNext(){ advanceToNextInputMode() }
-
+    func redrawButtons(){
+        for buttonView in boardView.allButton{
+            buttonView.setNeedsDisplay();
+        }
+    }
     /*--------------------------Set the keyboardHeight---------------------------*/
     func keyboardHeight()->Float {
         var keyboardheight:Float
