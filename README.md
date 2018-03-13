@@ -10,7 +10,7 @@ It is my first application on IOS, just for replacing the origin keyboard when I
   - [ ] Text-transform control (shift key)
   - [ ] Config key
   - [ ] Number key?
-- [ ] Application icon
+- [x] Application icon
 - [ ] Key icons
 - [ ] Characters layout
 - [ ] Configs
@@ -21,12 +21,14 @@ It is my first application on IOS, just for replacing the origin keyboard when I
 - [ ] Programming language words dict
 
 
-### Ref
+### References
 
 [The Swift Programming Language - Official Document](https://developer.apple.com/library/content/documentation/Swift/Conceptual/Swift_Programming_Language/index.html)
 
 [App Extension - Custom Keyboard](https://developer.apple.com/library/content/documentation/General/Conceptual/ExtensibilityPG/CustomKeyboard.html)
 
 [TXInputMethod - txHe](https://github.com/txHe/TXInputMethod)
+
+The icon resize script is referred to [IconSplashMaker](https://github.com/winterfeel/IconSplashMaker)
 
 Thanks for [google](https://www.google.com) & [stackoverflow](https://www.stackoverflow.com)
