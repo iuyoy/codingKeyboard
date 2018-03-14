@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import VideoToolbox
 
 //Shift type
 enum SHIFT_TYPE {
@@ -69,6 +70,8 @@ class KeyboardViewController: UIInputViewController {
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapLeft), for: .touchUpInside)
             case "right":
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapRight), for: .touchUpInside)
+            case "config":
+                buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapConfig), for: .touchUpInside)
             default:
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapCharacter), for: .touchUpInside)
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapTriChar), for: .touchUpOutside)
@@ -139,7 +142,10 @@ class KeyboardViewController: UIInputViewController {
     }
     /*---------------------------Tap delete key---------------------------*/
     @objc
-    func didTapDelete(){ textDocumentProxy.deleteBackward() }
+    func didTapDelete(){
+        AudioServicesPlaySystemSound(1155)
+        textDocumentProxy.deleteBackward()
+    }
     /*---------------------------Long Tap delete key---------------------------*/
     @objc
     func longTapDelete(gesture: UILongPressGestureRecognizer) {
@@ -163,6 +169,11 @@ class KeyboardViewController: UIInputViewController {
         for buttonView in boardView.allButton{
             buttonView.setNeedsDisplay();
         }
+    }
+    /*---------------------------Tap config key---------------------------*/
+    @objc
+    func didTapConfig(){
+        //To-do
     }
     /*--------------------------Set the keyboardHeight---------------------------*/
     func keyboardHeight()->CGFloat {

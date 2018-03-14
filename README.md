@@ -10,7 +10,7 @@ It is my first application on IOS, just for replacing the origin keyboard when I
   - [x] Uppercase char input once (click shift)
   - [x] Text-transform control (long press shift)
   - [ ] Config key
-  - ~~[ ] Number key?~~
+  - [] ~~Number key?~~
 - [x] Application icon
 - [x] Key icons
 - [ ] Characters layout
@@ -19,8 +19,8 @@ It is my first application on IOS, just for replacing the origin keyboard when I
 - [ ] Configs
   - [ ] Indent by tap or spaces
 - [ ] Press feedback
-  - [ ] voice
-  - [ ] mirror key arrow (like apple keyboard)
+  - [x] voice
+  - [ ] enlarge key upside when press (like apple keyboard)
 - [ ] Programming language words dict
 - [ ] Redraw buttons when rotato the device
 

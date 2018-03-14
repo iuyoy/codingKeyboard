@@ -8,13 +8,14 @@
 
 import UIKit
 import Foundation
+import AudioToolbox
 
 /*---------------------------Normal Button UI---------------------------*/
 class NormalButton: UIControl {
     var lowerChar: String! //lowercase character
     var upperChar: String! //optional uppercase character & the key judgement sign
     var triChar: String! //optional symbol
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.translatesAutoresizingMaskIntoConstraints = false
@@ -29,6 +30,7 @@ class NormalButton: UIControl {
         self.lowerChar = lowerChar
         self.upperChar = upperChar
         self.triChar = triChar
+    
     }
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -37,7 +39,12 @@ class NormalButton: UIControl {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         self.addSubview(ClickKeyView(frame: self.bounds))
-
+        /*---------------------------typing voice---------------------------*/
+        if upperChar.count == 1 {
+            AudioServicesPlaySystemSound(1123)
+        } else if upperChar != "delete" { // delete typing voice implemented on didTapDelete
+            AudioServicesPlaySystemSound(1156)
+        }
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -53,7 +60,7 @@ class NormalButton: UIControl {
         }
     }
     public func getText() -> String{
-        return self.upperChar
+        return upperChar
     }
 
     override func draw(_ rect: CGRect) {
@@ -81,12 +88,12 @@ class NormalButton: UIControl {
     }
     /*---------------------------Draw button---------------------------*/
     func drawButton(_ rect: CGRect, paragraphStyle: NSMutableParagraphStyle, context: CGContext){
-        if shiftFlag != SHIFT_TYPE.shift_LOWERALWAYS && self.upperChar.count == 1{
-            drawCharacter(rect, character: self.upperChar, paragraphStyle: paragraphStyle, fontSize: 18.0, fontColor: UIColor.black)
+        if shiftFlag != SHIFT_TYPE.shift_LOWERALWAYS && upperChar.count == 1{
+            drawCharacter(rect, character: upperChar, paragraphStyle: paragraphStyle, fontSize: 18.0, fontColor: UIColor.black)
         } else {
-            drawCharacter(rect, character: self.lowerChar, paragraphStyle: paragraphStyle, fontSize: 18.0, fontColor: UIColor.black)
+            drawCharacter(rect, character: lowerChar, paragraphStyle: paragraphStyle, fontSize: 18.0, fontColor: UIColor.black)
         }
-        if self.triChar != ""{
+        if triChar != ""{
             drawSymbol(rect, paragraphStyle: paragraphStyle, fontSize: 12.0, fontColor: UIColor.lightGray)
         }
     }
@@ -101,17 +108,16 @@ class NormalButton: UIControl {
         let point_title = CGPoint(x: float_x_pos,y: float_y_pos)
         character.draw(at: point_title, withAttributes: charAttr as? [NSAttributedStringKey : Any])
     }
+    
     func drawSymbol(_ rect: CGRect, paragraphStyle: NSMutableParagraphStyle, fontSize: CGFloat, fontColor: UIColor){
         let charAttr:NSDictionary = [NSAttributedStringKey.font:UIFont.systemFont(ofSize: fontSize),
                                       NSAttributedStringKey.foregroundColor:fontColor,
                                       NSAttributedStringKey.paragraphStyle:paragraphStyle]
-        let charSize = self.triChar.size(withAttributes: charAttr as? [NSAttributedStringKey : Any])
-//        let float_x_pos = (rect.size.width - charSize.width)/2
-//        let float_y_pos = char_y_pos - charSize.height*3/4
+        let charSize = triChar.size(withAttributes: charAttr as? [NSAttributedStringKey : Any])
         let float_x_pos = rect.size.width - charSize.width*2
         let float_y_pos = CGFloat(0)
         let point_title = CGPoint(x: float_x_pos, y: float_y_pos)
-        self.triChar.draw(at: point_title, withAttributes: charAttr as? [NSAttributedStringKey : Any])
+        triChar.draw(at: point_title, withAttributes: charAttr as? [NSAttributedStringKey : Any])
     }
 }
 
@@ -120,7 +126,7 @@ class ShiftButton: NormalButton{
     override func drawButton(_ rect: CGRect, paragraphStyle: NSMutableParagraphStyle, context: CGContext){
         switch shiftFlag {
         case SHIFT_TYPE.shift_UPPERALWAYS:
-            self.drawArrow(rect, context: context, strokeColor: UIColor.black, fillColor: UIColor.black, drawUnderline: true)
+            drawArrow(rect, context: context, strokeColor: UIColor.black, fillColor: UIColor.black, drawUnderline: true)
             break
         case SHIFT_TYPE.shift_UPPERONCE:
             drawArrow(rect, context: context, strokeColor: UIColor.black, fillColor: UIColor.black)
@@ -244,9 +250,9 @@ class ClickKeyView: UIView {
         let context:CGContext = UIGraphicsGetCurrentContext()!
         let roundedRect:UIBezierPath = UIBezierPath(roundedRect: rect, cornerRadius: 6.0)
 
-        context.setFillColor(self.backgroundcolor.cgColor)
+        context.setFillColor(backgroundcolor.cgColor)
         context.fill(rect)
-        self.backgroundcolor.setFill()
+        backgroundcolor.setFill()
         roundedRect.fill(with: CGBlendMode.softLight, alpha: 0.5)
     }
 }
