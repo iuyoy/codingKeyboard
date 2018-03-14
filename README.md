@@ -8,18 +8,21 @@ It is my first application on IOS, just for replacing the origin keyboard when I
   - [x] Arrow key function
   - [x] Long pressing deletion
   - [x] Uppercase char input once (click shift)
-  - [ ] Text-transform control (long press shift)
+  - [x] Text-transform control (long press shift)
   - [ ] Config key
-  - [ ] Number key?
+  - ~~[ ] Number key?~~
 - [x] Application icon
-- [ ] Key icons
+- [x] Key icons
 - [ ] Characters layout
+- [x] Keyboard size
+- [x] Main storyboard layout
 - [ ] Configs
   - [ ] Indent by tap or spaces
 - [ ] Press feedback
   - [ ] voice
   - [ ] mirror key arrow (like apple keyboard)
 - [ ] Programming language words dict
+- [ ] Redraw buttons when rotato the device
 
 
 ### References

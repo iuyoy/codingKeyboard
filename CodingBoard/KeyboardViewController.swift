@@ -8,26 +8,26 @@
 
 import UIKit
 
-//定义枚举类型标注shift按键所单击的次数
+//Shift type
 enum SHIFT_TYPE {
     case shift_LOWERALWAYS
     case shift_UPPERONCE
     case shift_UPPERALWAYS
 }
 
-//定义枚举类型标注当前键盘类型
+//Keyboard type
 enum KEYBOARD_TYPE {
-    case alphabet //字母键盘
-    case number //数字键盘
+    case alphabet
+    // case number
 }
-//定义一个全局的变量，标注单击shift按键的次数
+//Shift flag
 var shiftFlag:SHIFT_TYPE = SHIFT_TYPE.shift_LOWERALWAYS
 
 class KeyboardViewController: UIInputViewController {
 
     var boardView:BoardView!
     var timer: Timer!// for long press deletion
-    
+
     var shiftButton: NormalButton!
     let screenWidth = UIScreen.main.bounds.size.width
 
@@ -35,63 +35,48 @@ class KeyboardViewController: UIInputViewController {
         super.viewDidLoad()
 
 //        self.view.translatesAutoresizingMaskIntoConstraints = false
-        let _expandedHeight = CGFloat(264)
-        let _heightConstraint = NSLayoutConstraint(item:self.view, attribute:.height, relatedBy:.equal, toItem:nil, attribute:.notAnAttribute, multiplier:0.0, constant: _expandedHeight)
-        self.view.addConstraint(_heightConstraint)
         self.view.isMultipleTouchEnabled = false
         self.view.isExclusiveTouch = true
-        self.putKeyboardToView()
-    }
-    /*-----------------将所需键盘上屏----------------*/
-    func putKeyboardToView() {
 
-//        self.boardView = BoardView(frame:CGRect(x: 0, y: 0, width: screenWidth, height: CGFloat(keyboardHeight())))
-        self.boardView = BoardView(frame:CGRect(x: 0, y: 0, width: screenWidth, height: CGFloat(264)))
-        
+        // Draw the keyboard
+        let height = keyboardHeight()
+        self.boardView = BoardView(frame:CGRect(x: 0, y: 0, width: screenWidth, height: height))
         self.bindKey()
         self.view.addSubview(self.boardView)
-
     }
+
     func bindKey(){
         for buttonView in self.boardView.allButton {
             switch(buttonView.getText()) {
             case "return":
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapReturn), for: .touchUpInside)
-                break
             case "space":
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapSpace), for: .touchUpInside)
-                break
             case "tab":
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapTab), for: .touchUpInside)
-                break
             case "shift":
                 shiftButton = buttonView
+                let longTapRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(KeyboardViewController.longTapShift))
+                buttonView.addGestureRecognizer(longTapRecognizer)
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapShift), for: .touchUpInside)
-                break
             case "delete":
                 let longTapRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(KeyboardViewController.longTapDelete))
                 buttonView.addGestureRecognizer(longTapRecognizer)
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapDelete), for: .touchUpInside)
-                break
             case "next":
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapNext), for: .touchUpInside)
-                break
             case "left":
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapLeft), for: .touchUpInside)
-                break
             case "right":
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapRight), for: .touchUpInside)
-                break
             default:
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapCharacter), for: .touchUpInside)
                 buttonView.addTarget(self, action: #selector(KeyboardViewController.didTapTriChar), for: .touchUpOutside)
-                break
-
 
             }
         }
     }
-    
+
     /*---------------------------Tap character key---------------------------*/
     @objc
     func didTapCharacter(sender: NormalButton){
@@ -103,15 +88,14 @@ class KeyboardViewController: UIInputViewController {
                 redrawButtons()
             }
         }else{
-            proxy.insertText(sender.lowChar)
+            proxy.insertText(sender.lowerChar)
         }
     }
     /*---------------------------Slide to input symbol---------------------------*/
     @objc
     func didTapTriChar(sender: NormalButton){
-        let proxy = textDocumentProxy
         if sender.triChar != ""{
-            proxy.insertText(sender.triChar)
+            textDocumentProxy.insertText(sender.triChar)
         }
     }
     /*---------------------------Tap return key---------------------------*/
@@ -123,6 +107,7 @@ class KeyboardViewController: UIInputViewController {
     /*---------------------------Tap tab key---------------------------*/
     @objc
     func didTapTab(){ textDocumentProxy.insertText("    ") }
+
     /*---------------------------Tap shift key---------------------------*/
     @objc
     func didTapShift(){
@@ -132,6 +117,25 @@ class KeyboardViewController: UIInputViewController {
             shiftFlag = SHIFT_TYPE.shift_LOWERALWAYS
         }
         redrawButtons()
+    }
+    @objc
+    func didLongTapShift(){
+        if shiftFlag != SHIFT_TYPE.shift_UPPERALWAYS{
+            shiftFlag = SHIFT_TYPE.shift_UPPERALWAYS
+        }else{
+            shiftFlag = SHIFT_TYPE.shift_LOWERALWAYS
+        }
+        redrawButtons()
+    }
+    /*---------------------------Long Tap shift key---------------------------*/
+    @objc
+    func longTapShift(gesture: UILongPressGestureRecognizer) {
+        if gesture.state == .began {
+            timer = Timer.scheduledTimer(timeInterval: 0.2, target: self, selector: #selector(KeyboardViewController.didLongTapShift), userInfo: nil, repeats: false)
+        } else if gesture.state == .ended || gesture.state == .cancelled {
+            timer?.invalidate()
+            timer = nil
+        }
     }
     /*---------------------------Tap delete key---------------------------*/
     @objc
@@ -161,42 +165,37 @@ class KeyboardViewController: UIInputViewController {
         }
     }
     /*--------------------------Set the keyboardHeight---------------------------*/
-    func keyboardHeight()->Float {
-        var keyboardheight:Float
-
+    func keyboardHeight()->CGFloat {
+        let height:CGFloat
+//        let screenHeight = UIScreen.main.bounds.size.height
         switch screenWidth {
+        // portrait screen
         case 320:
-            keyboardheight = 216.0
-            break
+            height = 216.0
         case 375:
-            keyboardheight = 216.0
-            break
+            // height = 264.0 //216.0
+            height = 240.0
         case 414:
-            keyboardheight = 226.0
-            break
-        case 480:
-            keyboardheight = 162.0
-            break
-        case 568:
-            keyboardheight = 162.0
-            break
-        case 667:
-            keyboardheight = 162.0
-            break
-        case 736:
-            keyboardheight = 162.0
-            break
+            height = 240.0
         case 768:
-            keyboardheight = 264.0
-            break
+            height = 264.0
         case 1024:
-            keyboardheight = 352.0
-            break
+            height = 352.0
+        // landscape screen
+        case 480:
+            height = 162.0
+        case 568:
+            height = 162.0
+        case 667:
+            height = 162.0
+        case 736:
+            height = 162.0
         default:
-            keyboardheight = 216.0
-            break
+            height = 240.0
         }
-        return keyboardheight
+        let heightConstraint = NSLayoutConstraint(item:self.view, attribute:.height, relatedBy:.equal, toItem:nil, attribute:.notAnAttribute, multiplier:0.0, constant: height)
+        self.view.addConstraint(heightConstraint)
+        return height
     }
 
     /*--------------------------System auto generation---------------------------*/

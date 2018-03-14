@@ -21,8 +21,8 @@ class BoardView : UIView {
         buttonTitles = [[["1","1","!"],   ["2","2","@"], ["3","3","#"], ["4","4","$"], ["5","5","%"], ["6","6","^"], ["7","7","&"], ["8","8","*"], ["9","9","("], ["0","0",")"]],
                         [["q","Q","{"],   ["w","W","["], ["e","E","="], ["r","R","~"], ["t","T","|"], ["y","Y","\\"], ["u","U","-"], ["i","I","+"], ["o","O","]"], ["p","P","}"]],
                         [["Tab","tab",""],   ["a","A","'"], ["s","S","\""], ["d","D","`"], ["f","F",""], ["g","G",""], ["h","H","_"], ["j","J","/"], ["k","K",":"], ["l","L",";"]],
-                        [["⇧","shift",""], ["z","Z","<"], ["x","X",","], ["c","C","!="], ["v","V",""], ["b","B",""], ["n","N","?"], ["m","M","."], ["o","O",">"], ["Del","delete",""]],
-                        [["123","symbol",""],["🌐","next",""], ["⚙︎","config",""], ["Space","space",""], ["◀︎","left",""], ["▶︎","right",""], ["Return","return",""]]]
+                        [["⇧","shift",""], ["z","Z","<"], ["x","X",","], ["c","C","!="], ["v","V",""], ["b","B","?"], ["n","N","."], ["m","M",">"], ["⇦","delete",""]],
+                        [["⚙︎","config",""], ["🌐","next",""],  ["Space","space",""], ["◀︎","left",""], ["▶︎","right",""], ["⏎","return",""]]]
 
         let keyboardWidth = frame.size.width
         let buttonViews = createButtons(screenWidth: keyboardWidth)
@@ -64,9 +64,11 @@ class BoardView : UIView {
         let button: NormalButton
         switch titles[1] {
         case "shift":
-            button = ShiftButton(frame:CGRect(x: 0, y: 0.0, width: 0.0, height: 0.0), lowChar: titles[0], upperChar: titles[1], triChar: titles[2])
+            button = ShiftButton(frame:CGRect(x: 0, y: 0.0, width: 0.0, height: 0.0), lowerChar: titles[0], upperChar: titles[1], triChar: titles[2])
+        case "next":
+            button = NextButton(frame:CGRect(x: 0, y: 0.0, width: 0.0, height: 0.0), lowerChar: titles[0], upperChar: titles[1], triChar: titles[2])
         default:
-            button = NormalButton(frame:CGRect(x: 0, y: 0.0, width: 0.0, height: 0.0), lowChar: titles[0], upperChar: titles[1], triChar: titles[2])
+            button = NormalButton(frame:CGRect(x: 0, y: 0.0, width: 0.0, height: 0.0), lowerChar: titles[0], upperChar: titles[1], triChar: titles[2])
         }
         return button
     }
@@ -84,25 +86,31 @@ class BoardView : UIView {
                 // key height
                 let heightConstraint = NSLayoutConstraint(item: buttonView, attribute: .height, relatedBy: .equal, toItem: buttonViews[0][0], attribute: .height, multiplier: 1.0, constant: 0)
                 // key width
-                if buttonView.getText() == "space" {
-                    widthConstraint = NSLayoutConstraint(item: buttonView, attribute: .width, relatedBy: .equal, toItem: buttonViews[0][0], attribute: .width, multiplier: 3, constant: 8)
-                } else if buttonView.getText() == "return" {
+                switch buttonView.getText() {
+                case "space":
+                    widthConstraint = NSLayoutConstraint(item: buttonView, attribute: .width, relatedBy: .equal, toItem: buttonViews[0][0], attribute: .width, multiplier: 4, constant: 12)
+                case "return":
                     widthConstraint = NSLayoutConstraint(item: buttonView, attribute: .width, relatedBy: .equal, toItem: buttonViews[0][0], attribute: .width, multiplier: 2, constant: 4)
-                } else {
+                case "delete" :
+                    widthConstraint = NSLayoutConstraint(item: buttonView, attribute: .width, relatedBy: .equal, toItem: buttonViews[0][0], attribute: .width, multiplier: 1.5, constant: 2)
+                case "shift" :
+                    widthConstraint = NSLayoutConstraint(item: buttonView, attribute: .width, relatedBy: .equal, toItem: buttonViews[0][0], attribute: .width, multiplier: 1.5, constant: 2)
+                default:
                     widthConstraint = NSLayoutConstraint(item: buttonView, attribute: .width, relatedBy: .equal, toItem: buttonViews[0][0], attribute: .width, multiplier: 1.0, constant: 0)
+
                 }
                 // keys interval of top-and-bottom
                 if i == 0 {
-                    topConstraint = NSLayoutConstraint(item: buttonView, attribute: .top, relatedBy: .equal, toItem: mainView, attribute: .top, multiplier: 1.0, constant: 2.0)
+                    topConstraint = NSLayoutConstraint(item: buttonView, attribute: .top, relatedBy: .equal, toItem: mainView, attribute: .top, multiplier: 1.0, constant: 3.0)
                 }else{
                     let upperButton = buttonViews[i-1][0]
-                    topConstraint = NSLayoutConstraint(item: buttonView, attribute: .top, relatedBy: .equal, toItem: upperButton, attribute: .bottom, multiplier: 1.0, constant: 4.0)
+                    topConstraint = NSLayoutConstraint(item: buttonView, attribute: .top, relatedBy: .equal, toItem: upperButton, attribute: .bottom, multiplier: 1.0, constant: 6.0)
                 }
                 if i == buttonViews.count-1 {
-                    bottomConstraint = NSLayoutConstraint(item: buttonView, attribute: .bottom, relatedBy: .equal, toItem: mainView, attribute: .bottom, multiplier: 1.0, constant: -2.0)
+                    bottomConstraint = NSLayoutConstraint(item: buttonView, attribute: .bottom, relatedBy: .equal, toItem: mainView, attribute: .bottom, multiplier: 1.0, constant: -3.0)
                 }else{
                     let lowerButton = buttonViews[i+1][0]
-                    bottomConstraint = NSLayoutConstraint(item: buttonView, attribute: .bottom, relatedBy: .equal, toItem: lowerButton, attribute: .top, multiplier: 1.0, constant: -4.0)
+                    bottomConstraint = NSLayoutConstraint(item: buttonView, attribute: .bottom, relatedBy: .equal, toItem: lowerButton, attribute: .top, multiplier: 1.0, constant: -6.0)
                 }
 
                 // keys interval of left-and-right
