@@ -19,5 +19,12 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+//    func application(_ app: UIApplication, open url: URL,
+//                     options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+//        
+//        // Determine who sent the URL.
+//        _ = options[.sourceApplication]
+//        return true
+//        // Process the URL.
+//    }
 }

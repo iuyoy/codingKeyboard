@@ -15,7 +15,7 @@ class NormalButton: UIControl {
     var lowerChar: String! //lowercase character
     var upperChar: String! //optional uppercase character & the key judgement sign
     var triChar: String! //optional symbol
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.translatesAutoresizingMaskIntoConstraints = false
@@ -30,7 +30,7 @@ class NormalButton: UIControl {
         self.lowerChar = lowerChar
         self.upperChar = upperChar
         self.triChar = triChar
-    
+
     }
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -39,6 +39,7 @@ class NormalButton: UIControl {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         self.addSubview(ClickKeyView(frame: self.bounds))
+
         /*---------------------------typing voice---------------------------*/
         if upperChar.count == 1 {
             AudioServicesPlaySystemSound(1123)
@@ -108,7 +109,7 @@ class NormalButton: UIControl {
         let point_title = CGPoint(x: float_x_pos,y: float_y_pos)
         character.draw(at: point_title, withAttributes: charAttr as? [NSAttributedStringKey : Any])
     }
-    
+
     func drawSymbol(_ rect: CGRect, paragraphStyle: NSMutableParagraphStyle, fontSize: CGFloat, fontColor: UIColor){
         let charAttr:NSDictionary = [NSAttributedStringKey.font:UIFont.systemFont(ofSize: fontSize),
                                       NSAttributedStringKey.foregroundColor:fontColor,
@@ -126,13 +127,13 @@ class ShiftButton: NormalButton{
     override func drawButton(_ rect: CGRect, paragraphStyle: NSMutableParagraphStyle, context: CGContext){
         switch shiftFlag {
         case SHIFT_TYPE.shift_UPPERALWAYS:
-            drawArrow(rect, context: context, strokeColor: UIColor.black, fillColor: UIColor.black, drawUnderline: true)
+            drawArrow(rect, context: context, strokeColor: UIColor.white, fillColor: UIColor.white, drawUnderline: true)
             break
         case SHIFT_TYPE.shift_UPPERONCE:
-            drawArrow(rect, context: context, strokeColor: UIColor.black, fillColor: UIColor.black)
+            drawArrow(rect, context: context, strokeColor: UIColor.white, fillColor: UIColor.white)
             break
         default:
-            drawArrow(rect, context: context, strokeColor: UIColor.black, fillColor: UIColor.white)
+            drawArrow(rect, context: context, strokeColor: UIColor.black, fillColor: UIColor.black)
         }
     }
 
@@ -223,18 +224,19 @@ class NextButton: NormalButton{
 
 
 /*---------------------------Change button backgroundcolor when tap---------------------------*/
-class ClickKeyView: UIView {
+class ClickKeyView: UILabel {
     var backgroundcolor:UIColor!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        // super.init(frame: CGRect(x: -5.0, y: -5.0, width: frame.width*5/4, height: frame.height*5/4))
 
         self.translatesAutoresizingMaskIntoConstraints = false
         self.layer.cornerRadius = 6.0
-        self.alpha = 0.35
+        self.alpha = 0.4
         self.isMultipleTouchEnabled = false
         self.isExclusiveTouch = true
-        self.backgroundcolor = UIColor(red: 209/255.0, green: 213/255.0, blue: 219/255.0, alpha: 1.0)
+        self.backgroundcolor = UIColor(red: 20/255.0, green: 20/255.0, blue: 20/255.0, alpha: 1.0)
     }
 
     convenience init(frame: CGRect, backgroundcolor: UIColor){
@@ -247,6 +249,7 @@ class ClickKeyView: UIView {
     }
 
     override func draw(_ rect: CGRect) {
+
         let context:CGContext = UIGraphicsGetCurrentContext()!
         let roundedRect:UIBezierPath = UIBezierPath(roundedRect: rect, cornerRadius: 6.0)
 

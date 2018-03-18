@@ -2,15 +2,15 @@
 It is my first application on IOS, just for replacing the origin keyboard when I want to code using iphone.
 
 #### To-do list
-- [ ] Key functions
+- [x] Key functions
   - [x] Basic key functions
   - [x] Slide a button to input a symbol
   - [x] Arrow key function
   - [x] Long pressing deletion
   - [x] Uppercase char input once (click shift)
   - [x] Text-transform control (long press shift)
-  - [ ] Config key
-  - [] ~~Number key?~~
+  - [x] Config key
+  - [ ] ~~Number key?~~
 - [x] Application icon
 - [x] Key icons
 - [ ] Characters layout

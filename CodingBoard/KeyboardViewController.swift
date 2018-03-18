@@ -81,8 +81,7 @@ class KeyboardViewController: UIInputViewController {
     }
 
     /*---------------------------Tap character key---------------------------*/
-    @objc
-    func didTapCharacter(sender: NormalButton){
+    @objc func didTapCharacter(sender: NormalButton){
         let proxy = textDocumentProxy
         if shiftFlag != SHIFT_TYPE.shift_LOWERALWAYS && sender.upperChar != "" {
             proxy.insertText(sender.upperChar)
@@ -95,25 +94,19 @@ class KeyboardViewController: UIInputViewController {
         }
     }
     /*---------------------------Slide to input symbol---------------------------*/
-    @objc
-    func didTapTriChar(sender: NormalButton){
+    @objc func didTapTriChar(sender: NormalButton){
         if sender.triChar != ""{
             textDocumentProxy.insertText(sender.triChar)
         }
     }
     /*---------------------------Tap return key---------------------------*/
-    @objc
-    func didTapReturn(){ textDocumentProxy.insertText("\n") }
+    @objc func didTapReturn(){ textDocumentProxy.insertText("\n") }
     /*---------------------------Tap space key---------------------------*/
-    @objc
-    func didTapSpace(){ textDocumentProxy.insertText(" ") }
+    @objc func didTapSpace(){ textDocumentProxy.insertText(" ") }
     /*---------------------------Tap tab key---------------------------*/
-    @objc
-    func didTapTab(){ textDocumentProxy.insertText("    ") }
-
+    @objc func didTapTab(){ textDocumentProxy.insertText("    ") }
     /*---------------------------Tap shift key---------------------------*/
-    @objc
-    func didTapShift(){
+    @objc func didTapShift(){
         if shiftFlag == SHIFT_TYPE.shift_LOWERALWAYS{
             shiftFlag = SHIFT_TYPE.shift_UPPERONCE
         }else{
@@ -121,8 +114,7 @@ class KeyboardViewController: UIInputViewController {
         }
         redrawButtons()
     }
-    @objc
-    func didLongTapShift(){
+    @objc func didLongTapShift(){
         if shiftFlag != SHIFT_TYPE.shift_UPPERALWAYS{
             shiftFlag = SHIFT_TYPE.shift_UPPERALWAYS
         }else{
@@ -131,8 +123,7 @@ class KeyboardViewController: UIInputViewController {
         redrawButtons()
     }
     /*---------------------------Long Tap shift key---------------------------*/
-    @objc
-    func longTapShift(gesture: UILongPressGestureRecognizer) {
+    @objc func longTapShift(gesture: UILongPressGestureRecognizer) {
         if gesture.state == .began {
             timer = Timer.scheduledTimer(timeInterval: 0.2, target: self, selector: #selector(KeyboardViewController.didLongTapShift), userInfo: nil, repeats: false)
         } else if gesture.state == .ended || gesture.state == .cancelled {
@@ -141,14 +132,14 @@ class KeyboardViewController: UIInputViewController {
         }
     }
     /*---------------------------Tap delete key---------------------------*/
-    @objc
-    func didTapDelete(){
-        AudioServicesPlaySystemSound(1155)
-        textDocumentProxy.deleteBackward()
+    @objc func didTapDelete(){
+        if textDocumentProxy.hasText {
+            AudioServicesPlaySystemSound(1155)
+            textDocumentProxy.deleteBackward()
+        }
     }
     /*---------------------------Long Tap delete key---------------------------*/
-    @objc
-    func longTapDelete(gesture: UILongPressGestureRecognizer) {
+    @objc func longTapDelete(gesture: UILongPressGestureRecognizer) {
         if gesture.state == .began {
             timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(KeyboardViewController.didTapDelete), userInfo: nil, repeats: true)
         } else if gesture.state == .ended || gesture.state == .cancelled {
@@ -157,23 +148,31 @@ class KeyboardViewController: UIInputViewController {
         }
     }
     /*---------------------------Tap left key---------------------------*/
-    @objc
-    func didTapLeft(){ textDocumentProxy.adjustTextPosition(byCharacterOffset: -1) }
+    @objc func didTapLeft(){ textDocumentProxy.adjustTextPosition(byCharacterOffset: -1) }
     /*---------------------------Tap right key---------------------------*/
-    @objc
-    func didTapRight(){ textDocumentProxy.adjustTextPosition(byCharacterOffset: 1) }
+    @objc func didTapRight(){ textDocumentProxy.adjustTextPosition(byCharacterOffset: 1) }
     /*---------------------------Tap next key---------------------------*/
-    @objc
-    func didTapNext(){ advanceToNextInputMode() }
+    @objc func didTapNext(){ advanceToNextInputMode() }
     func redrawButtons(){
         for buttonView in boardView.allButton{
             buttonView.setNeedsDisplay();
         }
     }
     /*---------------------------Tap config key---------------------------*/
-    @objc
-    func didTapConfig(){
-        //To-do
+    @objc func didTapConfig(){
+        let urlString: String = "codingkeyboard://"
+        var responder: UIResponder? = self as UIResponder
+        let selector = #selector(openURL(_:))
+        while responder != nil {
+            if responder!.responds(to: selector) && responder != self {
+                responder!.perform(selector, with: URL(string: urlString)!)
+                return
+            }
+            responder = responder?.next
+        }
+    }
+    @objc func openURL(_ url: URL) {
+        return
     }
     /*--------------------------Set the keyboardHeight---------------------------*/
     func keyboardHeight()->CGFloat {
